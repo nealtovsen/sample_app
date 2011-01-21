@@ -148,9 +148,11 @@ div.field, div.actions {
     display: table;
 }
 
+
 .field_with_errors label {
     color: #fff;
 }
+
 
 #error_explanation {
     width: 400px;
