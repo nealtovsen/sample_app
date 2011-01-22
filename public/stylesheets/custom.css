@@ -148,11 +148,9 @@ div.field, div.actions {
     display: table;
 }
 
-
 .field_with_errors label {
     color: #fff;
 }
-
 
 #error_explanation {
     width: 400px;
@@ -182,5 +180,14 @@ div.field, div.actions {
 #error_explanation ul li {
     font-size: 12px;
     list-style: square;
+}
+
+/*User list*/
+ul.users {
+    margin-top: 1em;
+}
+
+.users li {
+    list-style: none;
 }
 
