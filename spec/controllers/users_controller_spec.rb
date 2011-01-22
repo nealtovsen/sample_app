@@ -54,6 +54,22 @@ describe UsersController do
         flash[:notice].should =~ /sign in/i
       end
     end
+    
+    describe "as an admin user" do
+      before(:each) do
+        admin = Factory(:user, :email => "admin@example.com", :admin => true)
+        test_sign_in(admin)
+        
+        @users = [@user]
+        30.times do
+          @users << Factory(:user, :email => Factory.next(:email))
+        end
+      end
+      it "should have delete links for admin" do
+        get :index
+        response.should have_selector("a", :"data-method" => "delete", :content => "delete")
+      end
+    end
 
     describe "for signed-in users" do
 
@@ -71,6 +87,11 @@ describe UsersController do
       it "should be successful" do
         get :index
         response.should be_success
+      end
+      
+      it "should not have delete links for non-admin" do
+        get :index
+        response.should_not have_selector("a", :"data-method" => "delete", :content => "delete")
       end
 
       it "should have the right title" do
@@ -142,9 +163,17 @@ describe UsersController do
       get 'new'
       response.should have_selector("title", :content => "Sign up")
     end
+    
+    it "should not be called by an existing user" do
+      @user = Factory(:user)
+      test_sign_in(@user)
+      get 'new'
+      response.should redirect_to(root_path)
+    end
   end
   
   describe "POST 'create'" do
+    
 
     describe "failure" do
 
@@ -168,6 +197,7 @@ describe UsersController do
         post :create, :user => @attr
         response.should render_template('new')
       end
+      
     end
     
     describe "success" do
@@ -196,6 +226,22 @@ describe UsersController do
       it "should sign the user in" do
         post :create, :user => @attr
         controller.should be_signed_in
+      end
+    end
+    
+    describe "should be unauthorized" do
+      before(:each) do
+        @attr = { :name => "New User", :email => "user@example.com",
+                  :password => "foobar", :password_confirmation => "foobar" }
+      end
+      
+      it "should not be called by an existing user" do
+        @user = Factory(:user)
+        test_sign_in(@user)
+        lambda do
+          post :create, :user => @attr
+        end.should_not change(User, :count)
+        #response.should redirect_to(root_path)
       end
     end
 
