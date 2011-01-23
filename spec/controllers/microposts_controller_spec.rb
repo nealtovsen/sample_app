@@ -77,7 +77,7 @@ describe MicropostsController do
 
       it "should deny access" do
         delete :destroy, :id => @micropost
-        response.should redirect_to(root_path)
+        response.should redirect_to(signin_path)
       end
     end
 
